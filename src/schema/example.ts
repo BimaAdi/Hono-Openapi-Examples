@@ -107,3 +107,52 @@ export const formDataRoute = createRoute({
 	},
 	tags: ["Examples"],
 });
+
+const formMultipleBody = z.object({
+	arrStr: z.string().openapi({
+		type: "array",
+		items: {
+			type: "string",
+		},
+	}),
+	arrFile: z
+		.instanceof(File)
+		.or(z.string())
+		.openapi({
+			type: "array",
+			items: {
+				type: "string",
+				format: "binary",
+			},
+		}),
+});
+
+const formMultipleOk = z.object({
+	arrStr: z.array(z.string()),
+	arrFile: z.array(z.string()),
+});
+
+export const formMultipleRoute = createRoute({
+	method: "post",
+	path: "/form-data-multiple/",
+	request: {
+		body: {
+			content: {
+				"multipart/form-data": {
+					schema: formMultipleBody,
+				},
+			},
+		},
+	},
+	responses: {
+		200: {
+			content: {
+				"application/json": {
+					schema: formMultipleOk,
+				},
+			},
+			description: "form data ok response",
+		},
+	},
+	tags: ["Examples"],
+});
