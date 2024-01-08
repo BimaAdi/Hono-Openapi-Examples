@@ -156,3 +156,22 @@ export const formMultipleRoute = createRoute({
 	},
 	tags: ["Examples"],
 });
+
+export const downloadFileRoute = createRoute({
+	method: "get",
+	path: "/download-file/",
+	responses: {
+		200: {
+			content: {
+				"image/png": {
+					schema: z.any().openapi({
+						type: "object",
+						format: "binary",
+					}),
+				},
+			},
+			description: "Return file",
+		},
+	},
+	tags: ["Examples"],
+});

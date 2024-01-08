@@ -1,11 +1,13 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import {
+	downloadFileRoute,
 	formDataRoute,
 	formMultipleRoute,
 	pathAndQueryRoute,
 } from "../schema/example";
 import path = require("node:path");
-import { appendFile } from "node:fs";
+import { readFileSync } from "node:fs";
+import { saveFile } from "../repository/example";
 
 export const app = new OpenAPIHono();
 
@@ -18,15 +20,8 @@ app.openapi(pathAndQueryRoute, (c) => {
 app.openapi(formDataRoute, async (c) => {
 	const { foo, bar, image } = c.req.valid("form");
 
-	// Save file in Hono
 	if (image instanceof File) {
-		const buff = await image.arrayBuffer();
-		const uploadPath = path.join(__dirname, "..", "..", "storage", image.name);
-		appendFile(uploadPath, Buffer.from(buff), (err) => {
-			if (err) {
-				console.error(err);
-			}
-		});
+		await saveFile(image);
 	}
 
 	return c.json(
@@ -57,13 +52,7 @@ app.openapi(formMultipleRoute, async (c) => {
 	const arrFile: string[] = [];
 	for (const file of files) {
 		if (file instanceof File) {
-			const buff = await file.arrayBuffer();
-			const uploadPath = path.join(__dirname, "..", "..", "storage", file.name);
-			appendFile(uploadPath, Buffer.from(buff), (err) => {
-				if (err) {
-					console.error(err);
-				}
-			});
+			await saveFile(file);
 			arrFile.push(file.name);
 		}
 	}
@@ -75,4 +64,16 @@ app.openapi(formMultipleRoute, async (c) => {
 		},
 		200,
 	);
+});
+
+// disable ts check because hono openapi cannot validate raw response
+// @ts-ignore: Unreachable code error
+app.openapi(downloadFileRoute, () => {
+	const payload = readFileSync(path.join("static", "Wikipedia-logo.png"));
+	return new Response(payload, {
+		headers: {
+			"content-type": "image/png",
+		},
+		status: 200,
+	});
 });

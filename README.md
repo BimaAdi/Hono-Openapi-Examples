@@ -1,8 +1,15 @@
+# Hono Openapi Example
+
+## Requirement
+- node >= 18
+- pnpm (npm or yarn still work)
+
+## Installation
 ```
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 ```
-open http://localhost:3000
+open http://localhost:3000/ui
 ```
