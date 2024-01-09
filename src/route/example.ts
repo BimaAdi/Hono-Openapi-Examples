@@ -68,12 +68,23 @@ app.openapi(formMultipleRoute, async (c) => {
 
 // disable ts check because hono openapi cannot validate raw response
 // @ts-ignore: Unreachable code error
-app.openapi(downloadFileRoute, () => {
+app.openapi(downloadFileRoute, async (c) => {
+	const { contentType } = await c.req.valid("query");
 	const payload = readFileSync(path.join("static", "Wikipedia-logo.png"));
-	return new Response(payload, {
-		headers: {
-			"content-type": "image/png",
-		},
-		status: 200,
-	});
+	if (contentType === "image/png") {
+		return new Response(payload, {
+			headers: {
+				"content-type": "image/png",
+			},
+			status: 200,
+		});
+	} else {
+		return new Response(payload, {
+			headers: {
+				"content-type": "application/octet-stream",
+				"Content-Disposition": 'attachment; filename="wikipedia.png"',
+			},
+			status: 200,
+		});
+	}
 });

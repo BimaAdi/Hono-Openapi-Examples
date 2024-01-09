@@ -1,7 +1,7 @@
 # Hono Openapi Example
 
 ## Requirement
-- node >= 18
+- node >= 20
 - pnpm (npm or yarn still work)
 
 ## Installation

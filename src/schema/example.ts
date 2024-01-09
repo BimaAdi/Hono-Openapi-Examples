@@ -160,6 +160,14 @@ export const formMultipleRoute = createRoute({
 export const downloadFileRoute = createRoute({
 	method: "get",
 	path: "/download-file/",
+	summary: "download file",
+	request: {
+		query: z.object({
+			contentType: z
+				.union([z.literal("image/png"), z.literal("application/octet-stream")])
+				.default("image/png"),
+		}),
+	},
 	responses: {
 		200: {
 			content: {
@@ -169,8 +177,15 @@ export const downloadFileRoute = createRoute({
 						format: "binary",
 					}),
 				},
+				"application/octet-stream": {
+					schema: z.any().openapi({
+						type: "object",
+						format: "binary",
+					}),
+				},
 			},
-			description: "Return file",
+			description:
+				"Return file, contentType can be image/png or application/octet-stream",
 		},
 	},
 	tags: ["Examples"],
