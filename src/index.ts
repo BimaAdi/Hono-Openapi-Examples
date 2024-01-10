@@ -12,6 +12,27 @@ const app = new OpenAPIHono();
 app.route("/todo", todoApp);
 app.route("/examples", exampleApp);
 
+// Security Schema
+app.openAPIRegistry.registerComponent(
+	"securitySchemes",
+	"AuthorizationApiKey",
+	{
+		type: "apiKey",
+		name: "X-API-KEY",
+		in: "header",
+	},
+);
+
+app.openAPIRegistry.registerComponent(
+	"securitySchemes",
+	"AuthorizationBearer",
+	{
+		type: "http",
+		scheme: "bearer",
+		bearerFormat: "JWT",
+	},
+);
+
 // The OpenAPI documentation will be available at /doc
 app.doc("/doc", {
 	openapi: "3.0.0",
@@ -38,7 +59,7 @@ app.post(
 			return c.text("Invalid!", 400);
 		}
 
-		return value;
+		return parsed.data;
 	}),
 	async (c) => {
 		const { foo, bar } = c.req.valid("form");

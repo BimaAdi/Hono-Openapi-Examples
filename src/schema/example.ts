@@ -190,3 +190,81 @@ export const downloadFileRoute = createRoute({
 	},
 	tags: ["Examples"],
 });
+
+const okProtectedResponse = z.object({
+	message: z.string(),
+});
+
+const unauthorizedProtectedResponse = z.object({
+	error: z.string(),
+});
+
+export const protectedApiKeyRoute = createRoute({
+	method: "get",
+	path: "/protected-api-key/",
+	summary: "Protected api-key Example",
+	security: [
+		{
+			AuthorizationApiKey: [],
+		},
+	],
+	request: {
+		headers: z.object({
+			"x-api-key": z.string().optional(),
+		}),
+	},
+	responses: {
+		200: {
+			content: {
+				"application/json": {
+					schema: okProtectedResponse,
+				},
+			},
+			description: "Authorized Response",
+		},
+		401: {
+			content: {
+				"application/json": {
+					schema: unauthorizedProtectedResponse,
+				},
+			},
+			description: "Unauthorized Response",
+		},
+	},
+	tags: ["Examples"],
+});
+
+export const protectedBearerRoute = createRoute({
+	method: "get",
+	path: "/protected-bearer/",
+	summary: "Protected bearer Route Example",
+	security: [
+		{
+			AuthorizationBearer: [],
+		},
+	],
+	request: {
+		headers: z.object({
+			authorization: z.string().optional(),
+		}),
+	},
+	responses: {
+		200: {
+			content: {
+				"application/json": {
+					schema: okProtectedResponse,
+				},
+			},
+			description: "Authorized Response",
+		},
+		401: {
+			content: {
+				"application/json": {
+					schema: unauthorizedProtectedResponse,
+				},
+			},
+			description: "Unauthorized Response",
+		},
+	},
+	tags: ["Examples"],
+});

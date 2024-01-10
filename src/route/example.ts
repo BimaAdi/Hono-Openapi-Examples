@@ -4,6 +4,8 @@ import {
 	formDataRoute,
 	formMultipleRoute,
 	pathAndQueryRoute,
+	protectedBearerRoute,
+	protectedApiKeyRoute,
 } from "../schema/example";
 import path = require("node:path");
 import { readFileSync } from "node:fs";
@@ -87,4 +89,44 @@ app.openapi(downloadFileRoute, async (c) => {
 			status: 200,
 		});
 	}
+});
+
+app.openapi(protectedApiKeyRoute, (c) => {
+	const { "x-api-key": apiKey } = c.req.valid("header");
+	// or
+	console.log(c.req.header()["x-api-key"]);
+	if (apiKey) {
+		return c.json(
+			{
+				message: "Hello",
+			},
+			200,
+		);
+	}
+	return c.json(
+		{
+			error: "Unauthorized",
+		},
+		401,
+	);
+});
+
+app.openapi(protectedBearerRoute, (c) => {
+	const { authorization } = c.req.valid("header");
+	// or
+	console.log(c.req.header()["authorization"]);
+	if (authorization) {
+		return c.json(
+			{
+				message: "Hello",
+			},
+			200,
+		);
+	}
+	return c.json(
+		{
+			error: "Unauthorized",
+		},
+		401,
+	);
 });
